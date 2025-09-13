@@ -1,0 +1,42 @@
+{
+  "name": "quiz-app-backend",
+  "version": "1.0.0",
+  "description": "Quiz Application Backend API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "db:generate": "npx prisma generate",
+    "db:push": "npx prisma db push",
+    "db:migrate": "npx prisma migrate dev",
+    "db:studio": "npx prisma studio",
+    "db:seed": "node prisma/seed.js",
+    "db:reset": "npx prisma migrate reset",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "quiz",
+    "api",
+    "express",
+    "prisma",
+    "mysql"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "prisma": "^5.7.1",
+    "@prisma/client": "^5.7.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "dotenv": "^16.3.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "@types/node": "^20.10.4"
+  }
+}

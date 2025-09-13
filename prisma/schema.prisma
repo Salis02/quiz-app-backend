@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  password_hash String
+  role          Role     @default(USER)
+  created_at    DateTime @default(now())
+  
+  // Relations
+  created_quizzes Quiz[]    @relation("QuizCreator")
+  answers        Answer[]
+  results        Result[]
+  audit_logs     AuditLog[]
+
+  @@map("users")
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  
+  // Relations
+  quizzes Quiz[]
+
+  @@map("categories")
+}
+
+model Quiz {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  category_id Int?
+  created_by  Int
+  published   Boolean  @default(false)
+  created_at  DateTime @default(now())
+  
+  // Relations
+  category  Category?   @relation(fields: [category_id], references: [id])
+  creator   User        @relation("QuizCreator", fields: [created_by], references: [id])
+  questions Question[]
+  results   Result[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  id         Int          @id @default(autoincrement())
+  quiz_id    Int
+  text       String       @db.Text
+  type       QuestionType @default(MCQ)
+  created_at DateTime     @default(now())
+  
+  // Relations
+  quiz    Quiz     @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+  options Option[]
+  answers Answer[]
+
+  @@map("questions")
+}
+
+model Option {
+  id          Int     @id @default(autoincrement())
+  question_id Int
+  text        String  @db.Text
+  is_correct  Boolean @default(false)
+  
+  // Relations
+  question Question @relation(fields: [question_id], references: [id], onDelete: Cascade)
+  answers  Answer[]
+
+  @@map("options")
+}
+
+model Answer {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  question_id Int
+  option_id   Int
+  created_at  DateTime @default(now())
+  
+  // Relations
+  user     User     @relation(fields: [user_id], references: [id])
+  question Question @relation(fields: [question_id], references: [id])
+  option   Option   @relation(fields: [option_id], references: [id])
+
+  @@unique([user_id, question_id]) // User can only answer each question once
+  @@map("answers")
+}
+
+model Result {
+  id          Int       @id @default(autoincrement())
+  user_id     Int
+  quiz_id     Int
+  score       Float
+  started_at  DateTime
+  finished_at DateTime?
+  
+  // Relations
+  user User @relation(fields: [user_id], references: [id])
+  quiz Quiz @relation(fields: [quiz_id], references: [id])
+
+  @@map("results")
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  user_id     Int?
+  action      String
+  entity_type String
+  entity_id   Int?
+  timestamp   DateTime @default(now())
+  
+  // Relations
+  user User? @relation(fields: [user_id], references: [id])
+
+  @@map("audit_logs")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum QuestionType {
+  MCQ
+  TRUE_FALSE
+  MULTIPLE_CHOICE
+}
