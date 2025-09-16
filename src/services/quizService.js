@@ -19,6 +19,8 @@ class QuizService {
     });
   }
 
+  
+
   async getQuizById(quizId) {
     const quiz = await prisma.quiz.findUnique({
       where: { id: quizId },

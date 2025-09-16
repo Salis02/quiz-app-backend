@@ -1,10 +1,12 @@
 const quizService = require('../services/quizService');
 
 class QuizController {
+
+  
   async getPublicQuizzes(req, res, next) {
     try {
       const quizzes = await quizService.getPublicQuizzes();
-      
+
       res.status(200).json({
         success: true,
         message: 'Public quizzes retrieved successfully',
@@ -19,9 +21,9 @@ class QuizController {
     try {
       const quizId = parseInt(req.params.id);
       const userId = req.user.id;
-      
+
       const result = await quizService.startQuiz(userId, quizId);
-      
+
       res.status(200).json({
         success: true,
         message: 'Quiz started successfully',
@@ -37,9 +39,9 @@ class QuizController {
       const questionId = parseInt(req.params.id);
       const userId = req.user.id;
       const { option_id } = req.body;
-      
+
       const result = await quizService.submitAnswer(userId, questionId, option_id);
-      
+
       res.status(200).json({
         success: true,
         message: 'Answer submitted successfully',
@@ -54,9 +56,9 @@ class QuizController {
     try {
       const quizId = parseInt(req.params.id);
       const userId = req.user.id;
-      
+
       const result = await quizService.finishQuiz(userId, quizId);
-      
+
       res.status(200).json({
         success: true,
         message: 'Quiz completed successfully',
@@ -70,9 +72,9 @@ class QuizController {
   async getUserResults(req, res, next) {
     try {
       const userId = req.user.id;
-      
+
       const results = await quizService.getUserResults(userId);
-      
+
       res.status(200).json({
         success: true,
         message: 'User results retrieved successfully',
@@ -82,6 +84,17 @@ class QuizController {
       next(error);
     }
   }
+
+  async getQuizById(req, res, next) {
+    try {
+      const { id } = req.params;
+      const quiz = await quizService.getQuizById(parseInt(id));
+      res.json({ success: true, data: quiz });
+    } catch (error) {
+      next(error);
+    }
+  };
+
 }
 
 module.exports = new QuizController();

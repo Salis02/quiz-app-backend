@@ -108,6 +108,23 @@ class AdminController {
     }
   }
 
+  async unpublishQuiz(req, res, next) {
+  try {
+    const quizId = parseInt(req.params.id);
+    const adminId = req.user.id;
+    const quiz = await adminService.unpublishQuiz(quizId, adminId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Quiz unpublished successfully',
+      data: quiz
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+
   async getQuizResults(req, res, next) {
     try {
       const quizId = parseInt(req.params.quizId);

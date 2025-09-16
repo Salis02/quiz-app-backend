@@ -3,6 +3,13 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 class AdminService {
+
+ async logAudit(userId, action, entityType, entityId) {
+    await prisma.auditLog.create({
+      data: { user_id: userId, action, entity_type: entityType, entity_id: entityId }
+    });
+  }  
+
   async createCategory(categoryData, adminId) {
     const category = await prisma.category.create({
       data: categoryData
@@ -213,6 +220,39 @@ class AdminService {
 
     return updatedQuiz;
   }
+
+  async unpublishQuiz(quizId, adminId) {
+  // Verify quiz exists and admin has permission
+  const quiz = await prisma.quiz.findUnique({
+    where: { id: quizId }
+  });
+
+  if (!quiz) {
+    throw new Error('Quiz not found');
+  }
+
+  if (quiz.created_by !== adminId) {
+    throw new Error('Permission denied');
+  }
+
+  const updatedQuiz = await prisma.quiz.update({
+    where: { id: quizId },
+    data: { published: false }
+  });
+
+  // Create audit log
+  await prisma.auditLog.create({
+    data: {
+      user_id: adminId,
+      action: 'UNPUBLISH_QUIZ',
+      entity_type: 'QUIZ',
+      entity_id: quizId
+    }
+  });
+
+  return updatedQuiz;
+}
+
 
   async getQuizResults(quizId, adminId) {
     // Verify quiz exists and admin has permission

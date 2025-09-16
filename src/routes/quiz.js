@@ -7,8 +7,10 @@ const router = express.Router();
 
 // Public routes
 router.get('/public', quizController.getPublicQuizzes);
+// router.get('/public/:id', quizController.getQuizById);
 
 // Protected user routes
+
 router.post('/:id/start', authenticate, quizController.startQuiz);
 router.post('/:id/finish', authenticate, quizController.finishQuiz);
 

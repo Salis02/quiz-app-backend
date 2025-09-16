@@ -4,7 +4,7 @@ class AuthController {
   async register(req, res, next) {
     try {
       const result = await authService.register(req.body);
-      
+
       res.status(201).json({
         success: true,
         message: 'User registered successfully',
@@ -18,7 +18,7 @@ class AuthController {
   async login(req, res, next) {
     try {
       const result = await authService.login(req.body);
-      
+
       res.status(200).json({
         success: true,
         message: 'Login successful',
@@ -28,6 +28,18 @@ class AuthController {
       next(error);
     }
   }
+
+  async me(req, res, next) {
+    try {
+      res.status(200).json({
+        success: true,
+        data: req.user
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }
 
 module.exports = new AuthController();

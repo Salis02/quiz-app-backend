@@ -26,6 +26,7 @@ router.post('/questions/:id/options', validate(schemas.createOption), adminContr
 
 // Quiz publishing
 router.patch('/quizzes/:id/publish', adminController.publishQuiz);
+router.patch('/quizzes/:id/unpublish', adminController.unpublishQuiz);
 
 // Results viewing
 router.get('/results/:quizId', adminController.getQuizResults);

@@ -63,6 +63,17 @@ async function main() {
       published: true
     }
   });
+  const jsQuiz1 = await prisma.quiz.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      title: 'Laravel Immediate',
+      description: 'Test your knowing knowledge',
+      category_id: jsCategory.id,
+      created_by: admin.id,
+      published: false
+    }
+  });
 
   // Create sample questions
   const question1 = await prisma.question.upsert({
