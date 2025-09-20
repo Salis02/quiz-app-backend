@@ -19,7 +19,7 @@ class QuizService {
     });
   }
 
-  
+
 
   async getQuizById(quizId) {
     const quiz = await prisma.quiz.findUnique({
@@ -54,8 +54,13 @@ class QuizService {
     const quiz = await prisma.quiz.findUnique({
       where: { id: quizId },
       include: {
-        _count: { select: { questions: true } }
-      }
+        questions: {
+          include: {
+            options: true,
+          },
+          orderBy: { created_at: 'asc' }, // Pastikan urutan pertanyaan konsisten
+        },
+      },
     });
 
     if (!quiz) {
@@ -101,12 +106,7 @@ class QuizService {
 
     return {
       result_id: result.id,
-      quiz: {
-        id: quiz.id,
-        title: quiz.title,
-        description: quiz.description,
-        total_questions: quiz._count.questions
-      },
+      quiz,
       started_at: result.started_at
     };
   }
@@ -254,7 +254,7 @@ class QuizService {
 
   async getUserResults(userId) {
     return await prisma.result.findMany({
-      where: { 
+      where: {
         user_id: userId,
         finished_at: { not: null }
       },
